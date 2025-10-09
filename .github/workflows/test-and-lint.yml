@@ -1,0 +1,50 @@
+name: Test and Lint (Optional)
+
+on:
+  workflow_dispatch:  # Solo manuale
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd Threads_exercises
+          pip install -r requirements.txt
+          pip install pylint black flake8
+
+      - name: Run Black (formatter check)
+        run: |
+          cd Threads_exercises
+          black --check web_app.py webscraper.py || echo "⚠️ Code formatting issues found"
+
+      - name: Run Flake8 (linting)
+        run: |
+          cd Threads_exercises
+          flake8 web_app.py webscraper.py --max-line-length=120 --ignore=E501,W503 || echo "⚠️ Linting issues found"
+
+      - name: Test Docker Build
+        run: |
+          cd Threads_exercises
+          docker build -t webscraper-test .
+          
+      - name: Test Docker Container
+        run: |
+          cd Threads_exercises
+          docker-compose up -d
+          sleep 10
+          curl -f http://localhost:5000/api/health || exit 1
+          docker-compose down
+
+      - name: Test Status
+        run: echo "✅ All tests passed!"

@@ -1,0 +1,40 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Threads_exercises/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            cd /opt/webscraper
+            git pull origin main
+            cd Threads_exercises
+            docker-compose down
+            docker-compose up -d --build
+            docker system prune -af
+            
+      - name: Health Check
+        run: |
+          sleep 10
+          curl -f http://${{ secrets.VPS_HOST }}:5000/api/health || exit 1
+          
+      - name: Deployment Status
+        run: echo "✅ Deployed successfully to VPS!"
