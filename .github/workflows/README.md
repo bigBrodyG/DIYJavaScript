@@ -1,16 +1,39 @@
 # 🚀 GitHub Actions Workflows
 
-Questa directory contiene i workflow per CI/CD del Web Scraper.
+Questa directory contiene i workflow per CI/CD e automazione del repository.
 
 ## 📋 Workflows Disponibili
 
-### 1. **docker-build.yml** (Attivo di default)
+### 1. **generate-index.yml** ⭐ (Nuovo!)
+Genera automaticamente la pagina index con tutti i progetti ed esercizi.
+
+**Trigger:** 
+- Push su main quando vengono modificati file HTML, Python o JavaScript
+- Esecuzione manuale
+
+**Cosa fa:**
+1. Scansiona tutte le directory del repository
+2. Genera automaticamente `index.html` con lista di tutti i progetti
+3. Commit e push automatico delle modifiche
+
+**Benefici:**
+- ✨ Zero manutenzione - l'indice si aggiorna da solo
+- 🎯 Mostra sempre i progetti correnti
+- 🚀 Funziona con future aggiunte senza modifiche
+
+### 2. **deploy-pages.yml**
+Deploy del sito statico su GitHub Pages.
+
+**Trigger:** Push su main (modifiche in `Threads_exercises/`)
+**Output:** Sito pubblicato su GitHub Pages
+
+### 3. **docker-build.yml** (Attivo di default)
 Build automatico dell'immagine Docker e push su GitHub Container Registry.
 
 **Trigger:** Push su main, PR, manuale
 **Output:** Immagine Docker su `ghcr.io`
 
-### 2. **test-and-lint.yml** (Consigliato)
+### 4. **test-and-lint.yml** (Consigliato)
 Test automatici, linting e validazione del codice.
 
 **Trigger:** Push su main/develop, PR
@@ -20,7 +43,7 @@ Test automatici, linting e validazione del codice.
 - Test build Docker
 - Health check del container
 
-### 3. **deploy-railway.yml**
+### 5. **deploy-railway.yml**
 Deploy automatico su Railway.app
 
 **Setup richiesto:**
