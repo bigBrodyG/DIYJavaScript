@@ -28,6 +28,15 @@ jobs:
       - name: Generate site
         run: python generate_index.py
 
+      - name: Copy project files into docs for preview iframes
+        run: |
+          for dir in */; do
+            case "$dir" in
+              .git/|.github/|docs/|node_modules/|functons/) ;;
+              *) [ -d "$dir" ] && cp -r "$dir" docs/ ;;
+            esac
+          done
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
